@@ -13,6 +13,48 @@ count for PBKDF2 was dailed in to take about 3 seconds on my 2013 Macbook Air,
 which comes out to 2M iterations, well over the NIST minimum guideline of 10K.
 Each vault gets a unique 18 byte salt generated from urandom.
 
+# Usage
+First create an empty vault.  When prompted for a key you should use a very
+strong password.  This is the one you'll have to memorize to protect your vault
+contents.
+
+    ./pman init ~/.pman_vault
+
+Add the new vault file to your environment.  For example, a bash user might add
+the following to their .profile:
+
+    export PMAN_VAULT=/home/myuser/.pman_vault
+
+To add or update a credential, use the 'set' command.  The inputs are not passed
+via the command line to avoid exposing credentials in shell history files or via
+the process list.
+
+    ./pman set
+
+You can fetch a credential using the 'get' command.
+
+	./pman get mycred
+
+You can also list all available credentials ('list') or search credentials using
+a substring ('search').  To avoid exposing unneeded passwords, these two
+commands will only show the credential name, username, description, and number
+of days since the entry was last updated.  Once you identify the credential you
+want, use 'get' to fetch the details.
+
+	./pman list
+
+You can 'remove' entries.  The entry being deleted will be emitted to stdout in
+case you make a mistake.  (You can use that information with a 'set' to recreate
+the entry).
+
+	./pman remove mycred
+
+If you ever need to change the secret key for your vault, you can use the
+'rekey' command.  This changes both the encryption password and generates a new
+random salt for the vault file.
+
+	./pman rekey
+
 # Dependencies
 * Python 3.6+
 * pyca/cryptography (https://cryptography.io/)
