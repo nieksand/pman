@@ -29,7 +29,7 @@ class Vault:
 
     def search(self, credsubstr: str):
         css_low = credsubstr.lower()
-        return [(k,v) for k, v in self.entries.items() if css_low in k.lower()]
+        return sorted([(k,v) for k, v in self.entries.items() if css_low in k.lower()])
 
     def remove(self, credname: str) -> None:
         del self.entries[credname]
