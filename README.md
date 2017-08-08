@@ -3,7 +3,8 @@ A utility for managing an encrypted credential vault.
 
 This was written as a hobby project and because I finally had time to explore
 Python3.  It should be fine for low-value credentials, but if you are dealing
-with serious threat scenarios, consider alternatives.
+with serious threat scenarios, consider alternatives.  Also use 2 factor
+authenticiation with a separate device whenever possible.
 
 Vault contents are protected using Fernet.  This encrypts using AES128 in CBC
 mode and authenticates using HMAC/SHA256.  Fernet's secret token comes from a
