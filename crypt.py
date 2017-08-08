@@ -12,7 +12,8 @@ def get_password(prompt: str='Password: ') -> bytes:
     return getpass.getpass(prompt).encode()
 
 def make_salt() -> bytes:
-	return os.urandom(18)
+    """Generate a strong salt."""
+    return os.urandom(18)
 
 def derive_key(password: bytes) -> bytes:
     """Convert password into key for Fernet encryption."""

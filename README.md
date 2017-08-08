@@ -1,14 +1,14 @@
 # Niek's Password Vault
 A utility for managing an encrypted credential vault.
 
-This was written as a hobby project and because I finally had time to explore
+This hobby project was written because I finally had some time to explore
 Python3.  It should be fine for low-value credentials, but if you are dealing
-with serious threat scenarios, consider alternatives.  Also use 2 factor
+with serious threat scenarios, consider alternatives.  Also use 2-factor
 authenticiation with a separate device whenever possible.
 
 Vault contents are protected using Fernet.  This encrypts using AES128 in CBC
 mode and authenticates using HMAC/SHA256.  Fernet's secret token comes from a
-user password that is key-stretched using PBKDF2 over SHA256.  The iteration
+user password that is key-stretched using PBKDF2 and SHA256.  The iteration
 count for PBKDF2 was dailed in to take about 3 seconds on my 2013 Macbook Air,
 which comes out to 2M iterations, well over the NIST minimum guideline of 10K.
 Each vault gets a unique 18 byte salt generated from urandom.

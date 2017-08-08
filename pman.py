@@ -165,7 +165,9 @@ def cmd_remove(vpass, v, credname):
     except KeyError:
         print('credential not found')
 
+
 def cmd_rekey(v, vfname):
+    """Change secret key and salt on vault."""
     while True:
         newpass = crypt.get_password('new vault key? ')
         confirm = crypt.get_password('new vault key? ')

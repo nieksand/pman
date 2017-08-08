@@ -12,12 +12,15 @@ def parse_dt(dt: str) -> datetime.datetime:
 
 class Vault:
     def __init__(self) -> None:
+        """Create empty vault."""
         self.entries = {}
 
     def list(self):
+        """List vault contents."""
         return sorted(self.entries.keys())
 
     def set(self, credname: str, **data) -> None:
+        """Set vault entry."""
         # keeps old created if overwriting existing entry
         now = current_dt()
         data['created'] = self.entries.get(credname, {}).get('created', now) 
@@ -25,17 +28,22 @@ class Vault:
         self.entries[credname] = data
 
     def get(self, credname: str):
+        """Get vault entry."""
         return self.entries[credname]
 
     def search(self, credsubstr: str):
+        """Case-insensitive substring search of vault."""
         css_low = credsubstr.lower()
         return sorted([(k,v) for k, v in self.entries.items() if css_low in k.lower()])
 
     def remove(self, credname: str) -> None:
+        """Remove vault entry."""
         del self.entries[credname]
 
     def dumps(self) -> str:
+        """Serialize vault using JSON."""
         return json.dumps(self.entries)
 
     def loads(self, s: str) -> None:
+        """Deserialize vault from JSON."""
         self.entries = json.loads(s)
