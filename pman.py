@@ -3,6 +3,7 @@ import datetime
 import os
 import os.path
 import sys
+from typing import Tuple
 
 import cryptography
 
@@ -54,7 +55,7 @@ def parse_args():
     return (cmd, dict( zip(cmd_args[cmd], sys.argv[2:]) ))
 
 
-def load_vault(vpass, vfname):
+def load_vault(vpass: bytes, vfname: str) -> Tuple[vault.Vault, bytes]:
     """Load existing vault."""
     with open(vfname, 'rb') as fp:
         salt = fp.read(18)
@@ -71,7 +72,7 @@ def load_vault(vpass, vfname):
     return (v, salt)
 
 
-def save_vault(vpass, v, salt, vfname, oflag='wb'):
+def save_vault(vpass: bytes, v: vault.Vault, salt: bytes, vfname: str, oflag: str='wb') -> None:
     """Save vault."""
     v_raw = v.dumps().encode()
     v_enc = crypt.encrypt(vpass, salt, v_raw)
@@ -80,7 +81,7 @@ def save_vault(vpass, v, salt, vfname, oflag='wb'):
         fp.write(v_enc)
 
 
-def cmd_init(vfname):
+def cmd_init(vfname: str) -> None:
     """Create new empty vault."""
     while True:
         vpass = crypt.get_password('vault key? ')
@@ -102,7 +103,7 @@ def cmd_init(vfname):
     print(f'you will want: export PMAN_VAULT={fullpath}\n')
 
 
-def cmd_list(v):
+def cmd_list(v: vault.Vault) -> None:
     """List vault contents."""
     print('\nVault contents')
     print('--------------')
@@ -113,7 +114,7 @@ def cmd_list(v):
     print('--------------')
 
 
-def cmd_set(vpass, v):
+def cmd_set(vpass: bytes, v: vault.Vault) -> None:
     """Create or update vault entry."""
     try:
         d = {}
@@ -137,7 +138,7 @@ def cmd_set(vpass, v):
 
 
 
-def cmd_get(v, credname):
+def cmd_get(v: vault.Vault, credname: str) -> None:
     """Get vault entry."""
     try:
         cred = v.get(credname)
@@ -146,7 +147,7 @@ def cmd_get(v, credname):
         print('credential not found')
 
 
-def cmd_search(v, substr):
+def cmd_search(v: vault.Vault, substr: str) -> None:
     """Search vault credential names."""
     print('\nSearch results')
     print('---------------')
@@ -156,7 +157,7 @@ def cmd_search(v, substr):
     print('---------------')
 
 
-def cmd_remove(vpass, v, credname):
+def cmd_remove(vpass: bytes, v: vault.Vault, credname: str) -> None:
     """Remove vault entry."""
     try:
         print('removing: ', v.get(credname))
@@ -166,7 +167,7 @@ def cmd_remove(vpass, v, credname):
         print('credential not found')
 
 
-def cmd_rekey(v, vfname):
+def cmd_rekey(v: vault.Vault, vfname: str) -> None:
     """Change secret key and salt on vault."""
     while True:
         newpass = crypt.get_password('new vault key? ')
