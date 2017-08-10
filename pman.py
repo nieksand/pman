@@ -61,7 +61,7 @@ def load_vault(vpass, vfname):
         v_enc = fp.read()
 
     try:
-        v_raw = crypt.decrypt(vpass, v_enc)
+        v_raw = crypt.decrypt(vpass, salt, v_enc)
     except cryptography.fernet.InvalidToken:
         print('\nincorrect decryption key\n', file=sys.stderr)
         sys.exit(1)
@@ -74,7 +74,7 @@ def load_vault(vpass, vfname):
 def save_vault(vpass, v, salt, vfname, oflag='wb'):
     """Save vault."""
     v_raw = v.dumps().encode()
-    v_enc = crypt.encrypt(vpass, v_raw)
+    v_enc = crypt.encrypt(vpass, salt, v_raw)
     with open(vfname, oflag) as fp:
         fp.write(salt)
         fp.write(v_enc)
