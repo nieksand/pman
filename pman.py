@@ -196,7 +196,12 @@ if __name__ == '__main__':
 
     vpass = crypt.get_password('vault key? ')
     vfname = os.environ['PMAN_VAULT']
-    v, salt = load_vault(vpass, vfname)
+
+    try:
+        v, salt = load_vault(vpass, vfname)
+    except Exception as e:
+        print(f'\nunable to load vault: {e}\n')
+        sys.exit(1)
 
     if cmd == 'list':
         cmd_list(v)
