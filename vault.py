@@ -34,7 +34,7 @@ class Vault:
     def search(self, credsubstr: str):
         """Case-insensitive substring search of vault."""
         css_low = credsubstr.lower()
-        return sorted([(k,v) for k, v in self.entries.items() if css_low in k.lower()])
+        return sorted([k for k in self.entries if css_low in k.lower()])
 
     def remove(self, credname: str) -> None:
         """Remove vault entry."""
