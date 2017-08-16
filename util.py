@@ -1,8 +1,8 @@
-import hashlib
 import base64
 import getpass
-import os
+import hashlib
 import io
+import os
 from typing import Tuple
 
 import cryptography.fernet as fernet

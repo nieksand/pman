@@ -1,5 +1,6 @@
-import json
 import datetime
+import json
+from typing import Any, Dict, List
 
 def current_dt() -> str:
     """Current UTC date and time as 'yyyy-mm-dd hh:mm:ss'."""
@@ -15,7 +16,7 @@ class Vault:
         """Create empty vault."""
         self.entries = {}
 
-    def list(self):
+    def list(self) -> List[str]:
         """List vault contents."""
         return sorted(self.entries.keys())
 
@@ -23,15 +24,15 @@ class Vault:
         """Set vault entry."""
         # keeps old created if overwriting existing entry
         now = current_dt()
-        data['created'] = self.entries.get(credname, {}).get('created', now) 
+        data['created'] = self.entries.get(credname, {}).get('created', now)
         data['modified'] = now
         self.entries[credname] = data
 
-    def get(self, credname: str):
+    def get(self, credname: str) -> Dict[str, Any]:
         """Get vault entry."""
         return self.entries[credname]
 
-    def search(self, credsubstr: str):
+    def search(self, credsubstr: str) -> List[str]:
         """Case-insensitive substring search of vault."""
         css_low = credsubstr.lower()
         return sorted([k for k in self.entries if css_low in k.lower()])
