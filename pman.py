@@ -8,7 +8,7 @@ from typing import Tuple
 import cryptography
 
 import vault
-import crypt
+import util
 
 def parse_args():
     """Parse command line args.
@@ -62,7 +62,7 @@ def load_vault(vpass: bytes, vfname: str) -> Tuple[vault.Vault, bytes]:
         v_enc = fp.read()
 
     try:
-        v_raw = crypt.decrypt(vpass, salt, v_enc)
+        v_raw = util.decrypt(vpass, salt, v_enc)
     except cryptography.fernet.InvalidToken:
         print('\nincorrect decryption key\n', file=sys.stderr)
         sys.exit(1)
@@ -75,7 +75,7 @@ def load_vault(vpass: bytes, vfname: str) -> Tuple[vault.Vault, bytes]:
 def save_vault(vpass: bytes, v: vault.Vault, salt: bytes, vfname: str, oflag: str='wb') -> None:
     """Save vault."""
     v_raw = v.dumps().encode()
-    v_enc = crypt.encrypt(vpass, salt, v_raw)
+    v_enc = util.encrypt(vpass, salt, v_raw)
     with open(vfname, oflag) as fp:
         fp.write(salt)
         fp.write(v_enc)
@@ -84,15 +84,15 @@ def save_vault(vpass: bytes, v: vault.Vault, salt: bytes, vfname: str, oflag: st
 def cmd_init(vfname: str) -> None:
     """Create new empty vault."""
     while True:
-        vpass = crypt.get_password('vault key? ')
-        confirm = crypt.get_password('vault key? ')
+        vpass = util.get_password('vault key? ')
+        confirm = util.get_password('vault key? ')
         if vpass == confirm:
             break
         print('\npasswords do not match\n')
 
     v = vault.Vault()
     try:
-        salt = crypt.make_salt()
+        salt = util.make_salt()
         save_vault(vpass, v, salt, vfname, 'xb')
     except FileExistsError:
         print('\nvault with that name already exists\n', file=sys.stderr)
@@ -122,8 +122,8 @@ def cmd_set(vpass: bytes, v: vault.Vault) -> None:
         d['username'] = input(f'{"username:":<20}')
 
         while True:
-            d['password'] = crypt.get_password(f'{"password:":<20}').decode('utf-8')
-            pass_confirm = crypt.get_password(f'{"password:":<20}').decode('utf-8')
+            d['password'] = util.get_password(f'{"password:":<20}').decode('utf-8')
+            pass_confirm = util.get_password(f'{"password:":<20}').decode('utf-8')
             if d['password'] == pass_confirm:
                 break
             print('\npasswords do not match\n')
@@ -169,13 +169,13 @@ def cmd_remove(vpass: bytes, v: vault.Vault, credname: str) -> None:
 def cmd_rekey(v: vault.Vault, vfname: str) -> None:
     """Change secret key and salt on vault."""
     while True:
-        newpass = crypt.get_password('new vault key? ')
-        confirm = crypt.get_password('new vault key? ')
+        newpass = util.get_password('new vault key? ')
+        confirm = util.get_password('new vault key? ')
         if newpass == confirm:
             break
         print('\npasswords do not match\n')
 
-    new_salt = crypt.make_salt()
+    new_salt = util.make_salt()
     save_vault(newpass, v, new_salt, vfname)
     print('vault key changed')
 
@@ -193,7 +193,7 @@ if __name__ == '__main__':
         print('\nPMAN_VAULT environment variable must point to vault file\n', file=sys.stderr)
         sys.exit(1)
 
-    vpass = crypt.get_password('vault key? ')
+    vpass = util.get_password('vault key? ')
     vfname = os.environ['PMAN_VAULT']
 
     try:
