@@ -1,4 +1,6 @@
+import datetime
 import unittest
+
 import vault
 
 class TestVault(unittest.TestCase):
@@ -93,6 +95,14 @@ class TestVault(unittest.TestCase):
         self.assertEqual(v2.list(), ['k', 'l'])
         self.assertEqual(v2.get('k')['username'], 'Kyle')
         self.assertEqual(v2.get('l')['username'], 'Linda')
+
+    def test_dt_helpers(self):
+        s = vault.current_dt()
+        self.assertEqual(len(s), 19)
+
+        dt = vault.parse_dt(s)
+        utc = datetime.datetime.utcnow()
+        self.assertGreaterEqual(utc, dt)
 
 
 if __name__ == '__main__':
