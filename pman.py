@@ -3,9 +3,6 @@ import datetime
 import os
 import os.path
 import sys
-from typing import Tuple
-
-import cryptography
 
 import vault
 import util
@@ -55,32 +52,6 @@ def parse_args():
     return (cmd, dict( zip(cmd_args[cmd], sys.argv[2:]) ))
 
 
-def load_vault(vpass: bytes, vfname: str) -> Tuple[vault.Vault, bytes]:
-    """Load existing vault."""
-    with open(vfname, 'rb') as fp:
-        salt = fp.read(18)
-        v_enc = fp.read()
-
-    try:
-        v_raw = util.decrypt(vpass, salt, v_enc)
-    except cryptography.fernet.InvalidToken:
-        print('\nincorrect decryption key\n', file=sys.stderr)
-        sys.exit(1)
-
-    v = vault.Vault()
-    v.loads(v_raw)
-    return (v, salt)
-
-
-def save_vault(vpass: bytes, v: vault.Vault, salt: bytes, vfname: str, oflag: str='wb') -> None:
-    """Save vault."""
-    v_raw = v.dumps().encode()
-    v_enc = util.encrypt(vpass, salt, v_raw)
-    with open(vfname, oflag) as fp:
-        fp.write(salt)
-        fp.write(v_enc)
-
-
 def cmd_init(vfname: str) -> None:
     """Create new empty vault."""
     while True:
@@ -93,7 +64,7 @@ def cmd_init(vfname: str) -> None:
     v = vault.Vault()
     try:
         salt = util.make_salt()
-        save_vault(vpass, v, salt, vfname, 'xb')
+        util.save_vault(vpass, v, salt, vfname, 'xb')
     except FileExistsError:
         print('\nvault with that name already exists\n', file=sys.stderr)
         sys.exit(1)
@@ -134,7 +105,7 @@ def cmd_set(vpass: bytes, v: vault.Vault) -> None:
         print('\ncancelled')
 
     v.set(**d)
-    save_vault(vpass, v, salt, vfname)
+    util.save_vault(vpass, v, salt, vfname)
 
 
 def cmd_get(v: vault.Vault, credname: str) -> None:
@@ -161,7 +132,7 @@ def cmd_remove(vpass: bytes, v: vault.Vault, credname: str) -> None:
     try:
         print('removing: ', v.get(credname))
         v.remove(credname)
-        save_vault(vpass, v, salt, vfname)
+        util.save_vault(vpass, v, salt, vfname)
     except KeyError:
         print('credential not found')
 
@@ -176,7 +147,7 @@ def cmd_rekey(v: vault.Vault, vfname: str) -> None:
         print('\npasswords do not match\n')
 
     new_salt = util.make_salt()
-    save_vault(newpass, v, new_salt, vfname)
+    util.save_vault(newpass, v, new_salt, vfname)
     print('vault key changed')
 
 
@@ -197,7 +168,7 @@ if __name__ == '__main__':
     vfname = os.environ['PMAN_VAULT']
 
     try:
-        v, salt = load_vault(vpass, vfname)
+        v, salt = util.load_vault(vpass, vfname)
     except Exception as e:
         print(f'\nunable to load vault: {e}\n')
         sys.exit(1)
