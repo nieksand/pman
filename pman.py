@@ -63,8 +63,8 @@ def cmd_init(vfname: str) -> None:
 
     v = vault.Vault()
     try:
-        salt = util.make_salt()
-        util.save_vault(vpass, v, salt, vfname, 'xb')
+        with open(vfname, 'xb') as fp:
+            util.save_vault(fp, vpass, util.make_salt(), v)
     except FileExistsError:
         print('\nvault with that name already exists\n', file=sys.stderr)
         sys.exit(1)
@@ -105,7 +105,8 @@ def cmd_set(vpass: bytes, v: vault.Vault) -> None:
         print('\ncancelled')
 
     v.set(**d)
-    util.save_vault(vpass, v, salt, vfname)
+    with open(vfname, 'wb') as fp:
+        util.save_vault(fp, vpass, salt, v)
 
 
 def cmd_get(v: vault.Vault, credname: str) -> None:
@@ -132,7 +133,8 @@ def cmd_remove(vpass: bytes, v: vault.Vault, credname: str) -> None:
     try:
         print('removing: ', v.get(credname))
         v.remove(credname)
-        util.save_vault(vpass, v, salt, vfname)
+        with open(vfname, 'wb') as fp:
+            util.save_vault(fp, vpass, salt, v)
     except KeyError:
         print('credential not found')
 
@@ -147,7 +149,8 @@ def cmd_rekey(v: vault.Vault, vfname: str) -> None:
         print('\npasswords do not match\n')
 
     new_salt = util.make_salt()
-    util.save_vault(newpass, v, new_salt, vfname)
+    with open(vfname, 'wb') as fp:
+        util.save_vault(fp, newpass, new_salt, v)
     print('vault key changed')
 
 
@@ -168,7 +171,8 @@ if __name__ == '__main__':
     vfname = os.environ['PMAN_VAULT']
 
     try:
-        v, salt = util.load_vault(vpass, vfname)
+        with open(vfname, 'rb') as fp:
+            v, salt = util.load_vault(fp, vpass)
     except Exception as e:
         print(f'\nunable to load vault: {e}\n')
         sys.exit(1)
