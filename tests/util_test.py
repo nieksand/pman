@@ -1,6 +1,8 @@
+import io
 import unittest
 
 import util
+import vault
 
 class UtilTest(unittest.TestCase):
 
@@ -20,6 +22,34 @@ class UtilTest(unittest.TestCase):
         deciphered_text = util.decrypt(password, salt, cipher_text)
 
         self.assertEqual(plain_text, deciphered_text)
+
+    def test_save_load_vault(self):
+        # dummy vault with data
+        v = vault.Vault()
+        v.set('email', username='Niek Sanders', password='secret')
+
+        # save to a file-like object
+        fp = io.BytesIO()
+        vpass = b'meowmix'
+        salt = util.make_salt()
+        util.save_vault(fp, vpass, salt, v)
+
+        # load fail: wrong key
+        fp.seek(0)
+        self.assertRaises(RuntimeError, util.load_vault, fp, b'wrongpass')
+
+        # load success: verify contents
+        fp.seek(0)
+        out_v, out_salt = util.load_vault(fp, vpass)
+
+        self.assertEqual(out_salt, salt)
+        self.assertEqual(out_v.dumps(), v.dumps())
+
+        # load fail: corrupt salt
+        fp.seek(0)
+        fp.write(b'a' * 18)
+        fp.seek(0)
+        self.assertRaises(RuntimeError, util.load_vault, fp, vpass)
 
 
 if __name__ == '__main__':

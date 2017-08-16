@@ -2,6 +2,7 @@ import hashlib
 import base64
 import getpass
 import os
+import io
 from typing import Tuple
 
 import cryptography.fernet as fernet
@@ -31,11 +32,10 @@ def decrypt(password: bytes, salt: bytes, data: bytes) -> bytes:
     key = derive_key(password, salt)
     return fernet.Fernet(key).decrypt(data)
 
-def load_vault(vpass: bytes, vfname: str) -> Tuple[vault.Vault, bytes]:
+def load_vault(fp: io.IOBase, vpass: bytes) -> Tuple[vault.Vault, bytes]:
     """Load existing vault."""
-    with open(vfname, 'rb') as fp:
-        salt = fp.read(18)
-        v_enc = fp.read()
+    salt = fp.read(18)
+    v_enc = fp.read()
 
     try:
         v_raw = decrypt(vpass, salt, v_enc)
@@ -46,10 +46,9 @@ def load_vault(vpass: bytes, vfname: str) -> Tuple[vault.Vault, bytes]:
     v.loads(v_raw)
     return (v, salt)
 
-def save_vault(vpass: bytes, v: vault.Vault, salt: bytes, vfname: str, oflag: str='wb') -> None:
+def save_vault(fp: io.IOBase, vpass: bytes, salt: bytes, v: vault.Vault) -> None:
     """Save vault."""
     v_raw = v.dumps().encode()
     v_enc = encrypt(vpass, salt, v_raw)
-    with open(vfname, oflag) as fp:
-        fp.write(salt)
-        fp.write(v_enc)
+    fp.write(salt)
+    fp.write(v_enc)
