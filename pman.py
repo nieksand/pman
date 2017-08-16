@@ -115,7 +115,7 @@ def cmd_get(v: vault.Vault, credname: str) -> None:
         cred = v.get(credname)
         print(f"{credname:<20} - u={cred['username']} p={cred['password']} d={cred['description']}")
     except KeyError:
-        print('credential not found')
+        print('\ncredential not found\n')
 
 
 def cmd_search(v: vault.Vault, substr: str) -> None:
