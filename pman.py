@@ -104,6 +104,10 @@ def cmd_set(vpass: bytes, v: vault.Vault) -> None:
     except EOFError:
         print('\ncancelled')
 
+    credname = d['credname']
+    if credname in v.list():
+        print(f'\nreplacing: {v.get(credname)}\n')
+
     v.set(**d)
     with open(vfname, 'wb') as fp:
         util.save_vault(fp, vpass, salt, v)
@@ -132,7 +136,7 @@ def cmd_search(v: vault.Vault, substr: str) -> None:
 def cmd_remove(vpass: bytes, v: vault.Vault, credname: str) -> None:
     """Remove vault entry."""
     try:
-        print('removing: ', v.get(credname))
+        print(f'\nremoving: {v.get(credname)}\n')
         v.remove(credname)
         with open(vfname, 'wb') as fp:
             util.save_vault(fp, vpass, salt, v)
