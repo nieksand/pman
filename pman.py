@@ -137,7 +137,6 @@ def cmd_set(vpass: bytes, v: vault.Vault) -> None:
     save_vault(vpass, v, salt, vfname)
 
 
-
 def cmd_get(v: vault.Vault, credname: str) -> None:
     """Get vault entry."""
     try:
