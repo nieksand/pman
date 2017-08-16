@@ -122,7 +122,8 @@ def cmd_search(v: vault.Vault, substr: str) -> None:
     """Search vault credential names."""
     print('\nSearch results')
     print('---------------')
-    for k, cred in v.search(substr):
+    for k in v.search(substr):
+        cred = v.get(k)
         age = (datetime.datetime.utcnow() - vault.parse_dt(cred['modified'])).days
         print(f"{k:<20} - u={cred['username']:<30} d={cred['description']:<40} ({age} days)")
     print('---------------')
