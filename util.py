@@ -4,7 +4,7 @@ import getpass
 import os
 from typing import Tuple
 
-from cryptography.fernet import Fernet
+import cryptography.fernet as fernet
 
 import vault
 
@@ -24,12 +24,12 @@ def derive_key(password: bytes, salt: bytes) -> bytes:
 def encrypt(password: bytes, salt: bytes, data: bytes) -> bytes:
     """Encrypt bytes using Fernet."""
     key = derive_key(password, salt)
-    return Fernet(key).encrypt(data)
+    return fernet.Fernet(key).encrypt(data)
 
 def decrypt(password: bytes, salt: bytes, data: bytes) -> bytes:
     """Decrypt bytes using Fernet."""
     key = derive_key(password, salt)
-    return Fernet(key).decrypt(data)
+    return fernet.Fernet(key).decrypt(data)
 
 def load_vault(vpass: bytes, vfname: str) -> Tuple[vault.Vault, bytes]:
     """Load existing vault."""
@@ -39,9 +39,8 @@ def load_vault(vpass: bytes, vfname: str) -> Tuple[vault.Vault, bytes]:
 
     try:
         v_raw = decrypt(vpass, salt, v_enc)
-    except cryptography.fernet.InvalidToken:
-        print('\nincorrect decryption key\n', file=sys.stderr)
-        sys.exit(1)
+    except fernet.InvalidToken:
+        raise RuntimeError('incorrect decryption key')
 
     v = vault.Vault()
     v.loads(v_raw)
