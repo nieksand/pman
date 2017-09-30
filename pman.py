@@ -2,6 +2,7 @@
 import datetime
 import os
 import os.path
+import signal
 import sys
 
 import vault
@@ -159,8 +160,17 @@ def cmd_rekey(v: vault.Vault, vfname: str) -> None:
     print('vault key changed')
 
 
+def signal_handler(signum, frame):
+    """Handle SIGINT gracefully."""
+    print('\n\n  -- cancelled!\n')
+    exit(1)
+
+
 if __name__ == '__main__':
     cmd, args = parse_args()
+
+    # no stacktrace on ctrl-c
+    signal.signal(signal.SIGINT, signal_handler)
 
     # only cmd not requiring vault
     if cmd == 'init':
