@@ -86,7 +86,7 @@ def cmd_list(v: vault.Vault) -> None:
     print('--------------')
 
 
-def cmd_set(vpass: bytes, v: vault.Vault) -> None:
+def cmd_set(vfname: str, vpass: bytes, salt: str, v: vault.Vault) -> None:
     """Create or update vault entry."""
     try:
         d = {}
@@ -134,7 +134,7 @@ def cmd_search(v: vault.Vault, substr: str) -> None:
     print('---------------')
 
 
-def cmd_remove(vpass: bytes, v: vault.Vault, credname: str) -> None:
+def cmd_remove(vfname: str, vpass: bytes, salt: str, v: vault.Vault, credname: str) -> None:
     """Remove vault entry."""
     try:
         print(f'\nremoving: {v.get(credname)}\n')
@@ -166,7 +166,7 @@ def signal_handler(signum, frame):
     exit(1)
 
 
-if __name__ == '__main__':
+def main():
     cmd, args = parse_args()
 
     # no stacktrace on ctrl-c
@@ -195,14 +195,18 @@ if __name__ == '__main__':
     if cmd == 'list':
         cmd_list(v)
     elif cmd == 'set':
-        cmd_set(vpass, v)
+        cmd_set(vfname, vpass, salt, v)
     elif cmd == 'get':
         cmd_get(v, **args)
     elif cmd == 'search':
         cmd_search(v, **args)
     elif cmd == 'remove':
-        cmd_remove(vpass, v, **args)
+        cmd_remove(vfname, vpass, salt, v, **args)
     elif cmd == 'rekey':
         cmd_rekey(v, vfname)
     else:
         raise RuntimeError('unhandled command')
+
+
+if __name__ == '__main__':
+    main()
