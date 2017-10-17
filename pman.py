@@ -89,7 +89,7 @@ def cmd_list(v: vault.Vault) -> None:
     print('--------------')
 
 
-def cmd_set(vfname: str, vpass: bytes, salt: str, v: vault.Vault) -> None:
+def cmd_set(vfname: str, vpass: bytes, salt: bytes, v: vault.Vault) -> None:
     """Create or update vault entry."""
     try:
         d = {}
@@ -137,7 +137,7 @@ def cmd_search(v: vault.Vault, substr: str) -> None:
     print('---------------')
 
 
-def cmd_remove(vfname: str, vpass: bytes, salt: str, v: vault.Vault, credname: str) -> None:
+def cmd_remove(vfname: str, vpass: bytes, salt: bytes, v: vault.Vault, credname: str) -> None:
     """Remove vault entry."""
     try:
         print(f'\nremoving: {v.get(credname)}\n')
