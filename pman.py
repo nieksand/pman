@@ -1,4 +1,7 @@
 #!/usr/local/bin/python3
+"""
+Niek's password manager.
+"""
 import datetime
 import os
 import os.path
@@ -50,7 +53,7 @@ def parse_args():
         print(f'    {cmd:<6} - {astr}\n')
         sys.exit(1)
 
-    return (cmd, dict( zip(cmd_args[cmd], sys.argv[2:]) ))
+    return (cmd, dict(zip(cmd_args[cmd], sys.argv[2:])))
 
 
 def cmd_init(vfname: str) -> None:

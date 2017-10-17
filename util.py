@@ -1,3 +1,6 @@
+"""
+Utility routines for vault manipulation.
+"""
 import base64
 import getpass
 import hashlib
