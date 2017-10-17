@@ -11,7 +11,7 @@ mode and authenticates using HMAC/SHA256.  Fernet's secret token comes from a
 user password that is key-stretched using PBKDF2 and SHA256.  The iteration
 count for PBKDF2 was dailed in to take about 3 seconds on my 2013 Macbook Air,
 which comes out to 2M iterations, well over the NIST minimum guideline of 10K.
-Each vault gets a unique 18 byte salt generated from urandom.
+Each vault file gets a unique 18 byte salt generated from urandom.
 
 # Usage
 First create an empty vault.  When prompted for a key you should use a very
