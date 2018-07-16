@@ -69,7 +69,8 @@ the duration of the Python script.
 
 For the first item, if you have sufficient access to read arbitrary memory from
 arbitrary processes on my computer, then my vault's secret key probably isn't
-safe from you anyway.
+safe from you anyway.  (I wrote the preceeding sentence before the era of
+Meltdown and Spectre, but the statement is still true).
 
 For the second item, I'm dubious you can securely clear memory using pure
 Python.
