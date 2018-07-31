@@ -5,6 +5,7 @@ Niek's password manager.
 import datetime
 import os
 import os.path
+import resource
 import signal
 import sys
 
@@ -174,6 +175,9 @@ def main():
 
     # no stacktrace on ctrl-c
     signal.signal(signal.SIGINT, signal_handler)
+
+    # no core dumps
+    resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
 
     # only cmd not requiring vault
     if cmd == 'init':

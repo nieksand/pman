@@ -13,6 +13,9 @@ count for PBKDF2 was dailed in to take about 3 seconds on my 2013 Macbook Air,
 which comes out to 2M iterations, well over the NIST minimum guideline of 10K.
 Each vault file gets a unique 18 byte salt generated from urandom.
 
+Core dumps are disabled via rlimit to reduce the chance of passwords being left
+in a decrypted state.
+
 # Usage
 First create an empty vault.  When prompted for a key you should use a very
 strong password.  This is the one you'll have to memorize to protect your vault
