@@ -15,6 +15,10 @@ def parse_dt(dt: str) -> datetime.datetime:
 
 
 class Vault:
+    """
+    Credential vault.
+    """
+
     def __init__(self) -> None:
         """Create empty vault."""
         self.entries = {}

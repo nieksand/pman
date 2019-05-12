@@ -164,13 +164,14 @@ def cmd_rekey(v: vault.Vault, vfname: str) -> None:
     print('vault key changed')
 
 
-def signal_handler(signum, frame):
+def signal_handler(_signum, _frame):
     """Handle SIGINT gracefully."""
     print('\n\n  -- cancelled!\n')
     exit(1)
 
 
 def main():
+    """Main entry point."""
     cmd, args = parse_args()
 
     # no stacktrace on ctrl-c
