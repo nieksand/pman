@@ -1,18 +1,17 @@
 """
 Utility routines for vault manipulation.
 """
+from typing import Tuple, IO
 import base64
 import getpass
 import hashlib
-import io
 import os
-from typing import Tuple
 
 import cryptography.fernet as fernet
 
 import vault
 
-def get_password(prompt: str='Password: ') -> bytes:
+def get_password(prompt: str = 'Password: ') -> bytes:
     """Prompt user for crypto password."""
     return getpass.getpass(prompt).encode()
 
@@ -35,7 +34,7 @@ def decrypt(password: bytes, salt: bytes, data: bytes) -> bytes:
     key = derive_key(password, salt)
     return fernet.Fernet(key).decrypt(data)
 
-def load_vault(fp: io.IOBase, vpass: bytes) -> Tuple[vault.Vault, bytes]:
+def load_vault(fp: IO[bytes], vpass: bytes) -> Tuple[vault.Vault, bytes]:
     """Load existing vault."""
     salt = fp.read(18)
     v_enc = fp.read()
@@ -46,10 +45,10 @@ def load_vault(fp: io.IOBase, vpass: bytes) -> Tuple[vault.Vault, bytes]:
         raise RuntimeError('incorrect decryption key')
 
     v = vault.Vault()
-    v.loads(v_raw)
+    v.loads(v_raw.decode('utf8'))
     return (v, salt)
 
-def save_vault(fp: io.IOBase, vpass: bytes, salt: bytes, v: vault.Vault) -> None:
+def save_vault(fp: IO[bytes], vpass: bytes, salt: bytes, v: vault.Vault) -> None:
     """Save vault."""
     v_raw = v.dumps().encode()
     v_enc = encrypt(vpass, salt, v_raw)

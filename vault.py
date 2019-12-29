@@ -1,9 +1,9 @@
 """
 In-memory representation of credential vault.
 """
+from typing import Any, Dict, List
 import datetime
 import json
-from typing import Any, Dict, List
 
 def current_dt() -> str:
     """Current UTC date and time as 'yyyy-mm-dd hh:mm:ss'."""
@@ -21,13 +21,13 @@ class Vault:
 
     def __init__(self) -> None:
         """Create empty vault."""
-        self.entries = {}
+        self.entries: Dict[str, Dict[str, Any]] = {}
 
     def list(self) -> List[str]:
         """List vault contents."""
         return sorted(self.entries.keys())
 
-    def set(self, credname: str, **data) -> None:
+    def set(self, credname: str, **data: str) -> None:
         """Set vault entry."""
         # keeps old created if overwriting existing entry
         now = current_dt()

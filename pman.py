@@ -2,6 +2,7 @@
 """
 Niek's password manager.
 """
+from typing import Any, Dict, List, Tuple
 import datetime
 import os
 import os.path
@@ -9,17 +10,17 @@ import resource
 import signal
 import sys
 
-import vault
 import util
+import vault
 
-def parse_args():
+def parse_args() -> Tuple[str, Dict[str, str]]:
     """Parse command line args.
 
     Does minimal verification to ensure command and associated argument count
     are valid.  Terminates program otherwise.  Prints usage and terminate if no args
     given.
     """
-    cmd_args = {
+    cmd_args: Dict[str, List[str]] = {
         'init':   ['vfname'],
         'list':   [],
         'set':    [],
@@ -34,7 +35,7 @@ def parse_args():
     if len(sys.argv) < 2:
         print(f'\nusage: {sys.argv[0]} [command] [args]\n')
         for c in valid_cmds:
-            astr = ', '.join([f'<{v}>' for v in cmd_args[c]])
+            astr = ', '.join(f'<{v}>' for v in cmd_args[c])
             print(f'    {c:<6} - {astr}')
         print()
         sys.exit(0)
@@ -50,7 +51,7 @@ def parse_args():
     args_want = len(cmd_args[cmd])
     if args_recv != args_want:
         print(f"\nincorrect arg count for '{cmd}': got={args_recv}, expected={args_want}\n")
-        astr = ', '.join([f'<{v}>' for v in cmd_args[cmd]])
+        astr = ', '.join(f'<{v}>' for v in cmd_args[cmd])
         print(f'    {cmd:<6} - {astr}\n')
         sys.exit(1)
 
@@ -164,13 +165,13 @@ def cmd_rekey(v: vault.Vault, vfname: str) -> None:
     print('vault key changed')
 
 
-def signal_handler(_signum, _frame):
+def signal_handler(_signum: int, _frame: Any) -> None:
     """Handle SIGINT gracefully."""
     print('\n\n  -- cancelled!\n')
-    exit(1)
+    sys.exit(1)
 
 
-def main():
+def main() -> None:
     """Main entry point."""
     cmd, args = parse_args()
 
