@@ -7,7 +7,7 @@ import getpass
 import hashlib
 import os
 
-import cryptography.fernet as fernet
+from cryptography import fernet
 
 import vault
 
