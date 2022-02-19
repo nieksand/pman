@@ -50,7 +50,3 @@ class UtilTest(unittest.TestCase):
         fp.write(b'a' * 18)
         fp.seek(0)
         self.assertRaises(RuntimeError, util.load_vault, fp, vpass)
-
-
-if __name__ == '__main__':
-    unittest.main()
