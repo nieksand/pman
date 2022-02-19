@@ -103,7 +103,3 @@ class TestVault(unittest.TestCase):
         dt = vault.parse_dt(s)
         utc = datetime.datetime.utcnow()
         self.assertGreaterEqual(utc, dt)
-
-
-if __name__ == '__main__':
-    unittest.main()
