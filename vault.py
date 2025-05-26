@@ -1,17 +1,17 @@
 """
 In-memory representation of credential vault.
 """
+from datetime import datetime, UTC
 from typing import Any, Dict, List
-import datetime
 import json
 
 def current_dt() -> str:
     """Current UTC date and time as 'yyyy-mm-dd hh:mm:ss'."""
-    return datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+    return datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S')
 
-def parse_dt(dt: str) -> datetime.datetime:
+def parse_dt(dt: str) -> datetime:
     """Parse 'yyyy-mm-dd hh:mm:ss' to datetime."""
-    return datetime.datetime.strptime(dt, '%Y-%m-%d %H:%M:%S')
+    return datetime.strptime(dt, '%Y-%m-%d %H:%M:%S').replace(tzinfo=UTC)
 
 
 class Vault:
@@ -38,6 +38,10 @@ class Vault:
     def get(self, credname: str) -> Dict[str, Any]:
         """Get vault entry."""
         return self.entries[credname]
+
+    def contains(self, credname: str) -> bool:
+        """Check if key in vault."""
+        return credname in self.entries
 
     def search(self, credsubstr: str) -> List[str]:
         """Case-insensitive substring search of vault."""

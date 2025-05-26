@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, UTC
 import unittest
 
 import vault
@@ -101,5 +101,5 @@ class TestVault(unittest.TestCase):
         self.assertEqual(len(s), 19)
 
         dt = vault.parse_dt(s)
-        utc = datetime.datetime.utcnow()
+        utc = datetime.now(UTC)
         self.assertGreaterEqual(utc, dt)

@@ -2,8 +2,8 @@
 """
 Niek's password manager.
 """
+from datetime import datetime, UTC
 from typing import Any, Dict, List, Tuple
-import datetime
 import os
 import os.path
 import resource
@@ -28,6 +28,7 @@ def parse_args() -> Tuple[str, Dict[str, str]]:
         'search': ['substr'],
         'remove': ['credname'],
         'rekey':  [],
+        'merge':  ['v2fname'],
     }
     valid_cmds = sorted(cmd_args.keys())
 
@@ -86,7 +87,7 @@ def cmd_list(v: vault.Vault) -> None:
     print('--------------')
     for k in v.list():
         cred = v.get(k)
-        age = (datetime.datetime.utcnow() - vault.parse_dt(cred['modified'])).days
+        age = (datetime.now(UTC) - vault.parse_dt(cred['modified'])).days
         print(f"{k:<20} - u={cred['username']:<30} d={cred['description']:<40} ({age} days)")
     print('--------------')
 
@@ -134,7 +135,7 @@ def cmd_search(v: vault.Vault, substr: str) -> None:
     print('---------------')
     for k in v.search(substr):
         cred = v.get(k)
-        age = (datetime.datetime.utcnow() - vault.parse_dt(cred['modified'])).days
+        age = (datetime.now(UTC) - vault.parse_dt(cred['modified'])).days
         print(f"{k:<20} - u={cred['username']:<30} d={cred['description']:<40} ({age} days)")
     print('---------------')
 
@@ -163,6 +164,38 @@ def cmd_rekey(v: vault.Vault, vfname: str) -> None:
     with open(vfname, 'wb') as fp:
         util.save_vault(fp, newpass, new_salt, v)
     print('vault key changed')
+
+
+def cmd_merge(v1: vault.Vault, v2fname: str):
+    """Merge two vault files, keeping newest for conflicting keys."""
+    # load second vault
+    try:
+        v2pass = util.get_password('second vault key? ')
+        with open(v2fname, 'rb') as fp:
+            v2, _salt = util.load_vault(fp, v2pass)
+    except Exception as e:
+        print(f'\nunable to load second vault: {e}\n')
+        sys.exit(1)
+
+    for key in v2.list():
+        if not v1.contains(key):
+            print(f'add v2: {key}')
+            v1.set(key, v2.get(key))
+            continue
+
+        v1_cred = v1.get(key)
+        v2_cred = v2.get(key)
+
+        if v1_cred == v2_cred:
+            continue
+        if v1_cred['modified'] < v2_cred['modified']:
+            print(f"pull v2: {key} [v1={v1_cred['modified']}, {v2_cred['modified']}]")
+            v1.set(key, **v2_cred)
+        else:
+            print(f"skip v2: {key} [v1={v1_cred['modified']}, {v2_cred['modified']}]")
+
+    with open('barfbarf', 'wb') as fp:
+        util.save_vault(fp, b'123', b'123', v1)
 
 
 def signal_handler(_signum: int, _frame: Any) -> None:
@@ -213,6 +246,8 @@ def main() -> None:
         cmd_remove(vfname, vpass, salt, v, **args)
     elif cmd == 'rekey':
         cmd_rekey(v, vfname)
+    elif cmd == 'merge':
+        cmd_merge(v, **args)
     else:
         raise RuntimeError('unhandled command')
 

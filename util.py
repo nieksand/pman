@@ -41,8 +41,8 @@ def load_vault(fp: IO[bytes], vpass: bytes) -> Tuple[vault.Vault, bytes]:
 
     try:
         v_raw = decrypt(vpass, salt, v_enc)
-    except fernet.InvalidToken:
-        raise RuntimeError('incorrect decryption key')
+    except fernet.InvalidToken as ex:
+        raise RuntimeError('incorrect decryption key') from ex
 
     v = vault.Vault()
     v.loads(v_raw.decode('utf8'))
