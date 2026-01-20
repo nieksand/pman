@@ -166,7 +166,7 @@ def cmd_rekey(v: vault.Vault, vfname: str) -> None:
     print('vault key changed')
 
 
-def cmd_merge(v1: vault.Vault, v2fname: str):
+def cmd_merge(v1: vault.Vault, v2fname: str) -> None:
     """Merge two vault files, keeping newest for conflicting keys."""
     # load second vault
     try:

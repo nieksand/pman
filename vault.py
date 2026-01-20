@@ -27,7 +27,7 @@ class Vault:
         """List vault contents."""
         return sorted(self.entries.keys())
 
-    def set(self, credname: str, **data: str) -> None:
+    def set(self, credname: str, **data: Any) -> None:
         """Set vault entry."""
         # keeps old created if overwriting existing entry
         now = current_dt()
