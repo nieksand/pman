@@ -76,7 +76,6 @@ class Vault:
 
             self_cred = self.get(key)
             other_cred = other.get(key)
-
             if self_cred == other_cred:
                 continue
 
