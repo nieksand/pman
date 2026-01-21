@@ -92,9 +92,7 @@ def cmd_set(vfname: str, vpass: bytes, salt: bytes, v: vault.Vault) -> None:
         d = {}
         d['credname'] = input(f'{"credential:":<20}')
         d['username'] = input(f'{"username:":<20}')
-
         d['password'] = util.get_confirmed_password(f'{"password:":<20}').decode('utf-8')
-
         d['description'] = input(f'{"description:":<20}')
 
     except EOFError:
