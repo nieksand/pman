@@ -158,22 +158,14 @@ def cmd_merge(vfname: str, vpass: bytes, salt: bytes, v1: vault.Vault, v2fname: 
         print(f'\nunable to load second vault: {e}\n')
         sys.exit(1)
 
-    for key in v2.list():
-        if not v1.contains(key):
-            print(f'add v2: {key}')
-            v1.set(key, v2.get(key))
-            continue
-
-        v1_cred = v1.get(key)
-        v2_cred = v2.get(key)
-
-        if v1_cred == v2_cred:
-            continue
-        if v1_cred['modified'] < v2_cred['modified']:
-            print(f"pull v2: {key} [v1={v1_cred['modified']}, {v2_cred['modified']}]")
-            v1.set(key, **v2_cred)
-        else:
-            print(f"skip v2: {key} [v1={v1_cred['modified']}, {v2_cred['modified']}]")
+    actions = v1.merge(v2)
+    for action, key, v1_mod, v2_mod in actions:
+        if action == 'add':
+            print(f'add from v2: {key}')
+        elif action == 'update':
+            print(f'update from v2: {key} [v1={v1_mod}, v2={v2_mod}]')
+        elif action == 'skip':
+            print(f'skip from v2: {key} [v1={v1_mod}, v2={v2_mod}]')
 
     with open(vfname, 'wb') as fp:
         util.save_vault(fp, vpass, salt, v1)
