@@ -103,3 +103,58 @@ class TestVault(unittest.TestCase):
         dt = vault.parse_dt(s)
         utc = datetime.now(UTC)
         self.assertGreaterEqual(utc, dt)
+
+    def test_merge_add(self):
+        # new keys from other vault are added
+        v1 = vault.Vault()
+        v1.set('a', username='Alice')
+
+        v2 = vault.Vault()
+        v2.set('b', username='Bob')
+
+        actions = v1.merge(v2)
+        self.assertEqual(actions, [('add', 'b', None, None)])
+        self.assertEqual(v1.list(), ['a', 'b'])
+        self.assertEqual(v1.get('b')['username'], 'Bob')
+
+    def test_merge_update(self):
+        # existing keys updated when other is newer
+        v1 = vault.Vault()
+        v1.set('a', username='Alice')
+        v1.get('a')['modified'] = '2020-01-01 00:00:00'
+
+        v2 = vault.Vault()
+        v2.set('a', username='Alice-Updated')
+        v2.get('a')['modified'] = '2025-01-01 00:00:00'
+
+        actions = v1.merge(v2)
+        self.assertEqual(actions, [('update', 'a', '2020-01-01 00:00:00', '2025-01-01 00:00:00')])
+        self.assertEqual(v1.get('a')['username'], 'Alice-Updated')
+
+    def test_merge_skip(self):
+        # existing keys skipped when self is newer
+        v1 = vault.Vault()
+        v1.set('a', username='Alice')
+        v1.get('a')['modified'] = '2025-01-01 00:00:00'
+
+        v2 = vault.Vault()
+        v2.set('a', username='Alice-Old')
+        v2.get('a')['modified'] = '2020-01-01 00:00:00'
+
+        actions = v1.merge(v2)
+        self.assertEqual(actions, [('skip', 'a', '2025-01-01 00:00:00', '2020-01-01 00:00:00')])
+        self.assertEqual(v1.get('a')['username'], 'Alice')
+
+    def test_merge_identical(self):
+        # identical credentials produce no action
+        v1 = vault.Vault()
+        v1.set('a', username='Alice')
+        cred = v1.get('a')
+
+        v2 = vault.Vault()
+        v2.set('a', username='Alice')
+        v2.get('a')['created'] = cred['created']
+        v2.get('a')['modified'] = cred['modified']
+
+        actions = v1.merge(v2)
+        self.assertEqual(actions, [])

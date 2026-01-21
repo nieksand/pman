@@ -2,7 +2,7 @@
 In-memory representation of credential vault.
 """
 from datetime import datetime, UTC
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Tuple
 import json
 
 def current_dt() -> str:
@@ -59,3 +59,31 @@ class Vault:
     def loads(self, s: str) -> None:
         """Deserialize vault from JSON."""
         self.entries = json.loads(s)
+
+    def merge(self, other: 'Vault') -> List[Tuple[str, str, Optional[str], Optional[str]]]:
+        """Merge another vault into this one, keeping newest for conflicts.
+
+        Returns list of (action, key, self_modified, other_modified) tuples where
+        action is 'add', 'update', or 'skip'.
+        """
+        actions: List[Tuple[str, str, Optional[str], Optional[str]]] = []
+
+        for key in other.list():
+            if not self.contains(key):
+                actions.append(('add', key, None, None))
+                self.set(key, **other.get(key))
+                continue
+
+            self_cred = self.get(key)
+            other_cred = other.get(key)
+
+            if self_cred == other_cred:
+                continue
+
+            if self_cred['modified'] < other_cred['modified']:
+                actions.append(('update', key, self_cred['modified'], other_cred['modified']))
+                self.set(key, **other_cred)
+            else:
+                actions.append(('skip', key, self_cred['modified'], other_cred['modified']))
+
+        return actions
