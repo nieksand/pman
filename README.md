@@ -58,6 +58,13 @@ random salt for the vault file.
 
 	./pman rekey
 
+You can 'merge' credentials from a second vault into your primary vault.  This
+is useful for combining vault backups or synchronizing vaults across machines.
+When both vaults contain the same credential name, the entry with the more
+recent modification date is kept.
+
+	./pman merge /path/to/second_vault
+
 # Dependencies
 * Python 3.11+
 * pyca/cryptography (https://cryptography.io/)
