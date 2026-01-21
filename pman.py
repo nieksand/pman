@@ -3,7 +3,8 @@
 Niek's password manager.
 """
 from datetime import datetime, UTC
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, Tuple
+import argparse
 import os
 import os.path
 import resource
@@ -16,47 +17,29 @@ import vault
 def parse_args() -> Tuple[str, Dict[str, str]]:
     """Parse command line args.
 
-    Does minimal verification to ensure command and associated argument count
-    are valid.  Terminates program otherwise.  Prints usage and terminate if no args
-    given.
+    Uses argparse for command and argument validation.
+    Prints usage and terminates if no args given.
     """
-    cmd_args: Dict[str, List[str]] = {
-        'init':   ['vfname'],
-        'list':   [],
-        'set':    [],
-        'get':    ['credname'],
-        'search': ['substr'],
-        'remove': ['credname'],
-        'rekey':  [],
-        'merge':  ['v2fname'],
-    }
-    valid_cmds = sorted(cmd_args.keys())
+    parser = argparse.ArgumentParser(prog='pman.py', description='Password manager')
+    subparsers = parser.add_subparsers(dest='command')
 
-    # must specify command
-    if len(sys.argv) < 2:
-        print(f'\nusage: {sys.argv[0]} [command] [args]\n')
-        for c in valid_cmds:
-            astr = ', '.join(f'<{v}>' for v in cmd_args[c])
-            print(f'    {c:<6} - {astr}')
-        print()
+    subparsers.add_parser('init').add_argument('vfname')
+    subparsers.add_parser('list')
+    subparsers.add_parser('set')
+    subparsers.add_parser('get').add_argument('credname')
+    subparsers.add_parser('search').add_argument('substr')
+    subparsers.add_parser('remove').add_argument('credname')
+    subparsers.add_parser('rekey')
+    subparsers.add_parser('merge').add_argument('v2fname')
+
+    args = parser.parse_args()
+
+    if args.command is None:
+        parser.print_help()
         sys.exit(0)
 
-    # command must be valid
-    cmd = sys.argv[1]
-    if cmd not in valid_cmds:
-        print(f"\ninvalid command, expecting one of: {', '.join(valid_cmds)}\n")
-        sys.exit(1)
-
-    # correct command-specific arg count
-    args_recv = len(sys.argv) - 2
-    args_want = len(cmd_args[cmd])
-    if args_recv != args_want:
-        print(f"\nincorrect arg count for '{cmd}': got={args_recv}, expected={args_want}\n")
-        astr = ', '.join(f'<{v}>' for v in cmd_args[cmd])
-        print(f'    {cmd:<6} - {astr}\n')
-        sys.exit(1)
-
-    return (cmd, dict(zip(cmd_args[cmd], sys.argv[2:])))
+    args_dict = {k: v for k, v in vars(args).items() if k != 'command'}
+    return (args.command, args_dict)
 
 
 def cmd_init(vfname: str) -> None:
