@@ -1,8 +1,10 @@
 """
 In-memory representation of credential vault.
 """
+from __future__ import annotations
+
 from datetime import datetime, UTC
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 import json
 
 def current_dt() -> str:
@@ -21,9 +23,9 @@ class Vault:
 
     def __init__(self) -> None:
         """Create empty vault."""
-        self.entries: Dict[str, Dict[str, Any]] = {}
+        self.entries: dict[str, dict[str, Any]] = {}
 
-    def list(self) -> List[str]:
+    def list(self) -> list[str]:
         """List vault contents."""
         return sorted(self.entries.keys())
 
@@ -35,7 +37,7 @@ class Vault:
         data['modified'] = now
         self.entries[credname] = data
 
-    def get(self, credname: str) -> Dict[str, Any]:
+    def get(self, credname: str) -> dict[str, Any]:
         """Get vault entry."""
         return self.entries[credname]
 
@@ -43,7 +45,7 @@ class Vault:
         """Check if key in vault."""
         return credname in self.entries
 
-    def search(self, credsubstr: str) -> List[str]:
+    def search(self, credsubstr: str) -> list[str]:
         """Case-insensitive substring search of vault."""
         css_low = credsubstr.lower()
         return sorted([k for k in self.entries if css_low in k.lower()])
@@ -60,13 +62,13 @@ class Vault:
         """Deserialize vault from JSON."""
         self.entries = json.loads(s)
 
-    def merge(self, other: 'Vault') -> List[Tuple[str, str, Optional[str], Optional[str]]]:
+    def merge(self, other: 'Vault') -> list[tuple[str, str, str | None, str | None]]:
         """Merge another vault into this one, keeping newest for conflicts.
 
         Returns list of (action, key, self_modified, other_modified) tuples where
         action is 'add', 'update', or 'skip'.
         """
-        actions: List[Tuple[str, str, Optional[str], Optional[str]]] = []
+        actions: list[tuple[str, str, str | None, str | None]] = []
 
         for key in other.list():
             if not self.contains(key):

@@ -3,7 +3,7 @@
 Niek's password manager.
 """
 from datetime import datetime, UTC
-from typing import Any, Dict
+from typing import Any
 import argparse
 import os
 import os.path
@@ -14,7 +14,7 @@ import sys
 import util
 import vault
 
-def parse_args() -> Dict[str, str]:
+def parse_args() -> dict[str, str]:
     """Parse command line args.
 
     Uses argparse for command and argument validation.
@@ -140,12 +140,13 @@ def cmd_merge(vfname: str, vpass: bytes, salt: bytes, v1: vault.Vault, v2fname: 
 
     actions = v1.merge(v2)
     for action, key, v1_mod, v2_mod in actions:
-        if action == 'add':
-            print(f'add from v2: {key}')
-        elif action == 'update':
-            print(f'update from v2: {key} [v1={v1_mod}, v2={v2_mod}]')
-        elif action == 'skip':
-            print(f'skip from v2: {key} [v1={v1_mod}, v2={v2_mod}]')
+        match action:
+            case 'add':
+                print(f'add from v2: {key}')
+            case 'update':
+                print(f'update from v2: {key} [v1={v1_mod}, v2={v2_mod}]')
+            case 'skip':
+                print(f'skip from v2: {key} [v1={v1_mod}, v2={v2_mod}]')
 
     with open(vfname, 'wb') as fp:
         util.save_vault(fp, vpass, salt, v1)
@@ -188,22 +189,23 @@ def main() -> None:
         print(f'\nunable to load vault: {e}\n')
         sys.exit(1)
 
-    if cmd == 'list':
-        cmd_list(v)
-    elif cmd == 'set':
-        cmd_set(vfname, vpass, salt, v)
-    elif cmd == 'get':
-        cmd_get(v, **args)
-    elif cmd == 'search':
-        cmd_search(v, **args)
-    elif cmd == 'remove':
-        cmd_remove(vfname, vpass, salt, v, **args)
-    elif cmd == 'rekey':
-        cmd_rekey(v, vfname)
-    elif cmd == 'merge':
-        cmd_merge(vfname, vpass, salt, v, **args)
-    else:
-        raise RuntimeError('unhandled command')
+    match cmd:
+        case 'list':
+            cmd_list(v)
+        case 'set':
+            cmd_set(vfname, vpass, salt, v)
+        case 'get':
+            cmd_get(v, **args)
+        case 'search':
+            cmd_search(v, **args)
+        case 'remove':
+            cmd_remove(vfname, vpass, salt, v, **args)
+        case 'rekey':
+            cmd_rekey(v, vfname)
+        case 'merge':
+            cmd_merge(vfname, vpass, salt, v, **args)
+        case _:
+            raise RuntimeError('unhandled command')
 
 
 if __name__ == '__main__':

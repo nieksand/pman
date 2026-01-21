@@ -1,7 +1,7 @@
 """
 Utility routines for vault manipulation.
 """
-from typing import Tuple, IO
+from typing import IO
 import base64
 import getpass
 import hashlib
@@ -43,7 +43,7 @@ def decrypt(password: bytes, salt: bytes, data: bytes) -> bytes:
     key = derive_key(password, salt)
     return fernet.Fernet(key).decrypt(data)
 
-def load_vault(fp: IO[bytes], vpass: bytes) -> Tuple[vault.Vault, bytes]:
+def load_vault(fp: IO[bytes], vpass: bytes) -> tuple[vault.Vault, bytes]:
     """Load existing vault."""
     salt = fp.read(18)
     v_enc = fp.read()
