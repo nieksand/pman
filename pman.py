@@ -61,13 +61,7 @@ def parse_args() -> Tuple[str, Dict[str, str]]:
 
 def cmd_init(vfname: str) -> None:
     """Create new empty vault."""
-    while True:
-        vpass = util.get_password('vault key? ')
-        confirm = util.get_password('vault key? ')
-        if vpass == confirm:
-            break
-        print('\npasswords do not match\n')
-
+    vpass = util.get_confirmed_password('vault key? ')
     v = vault.Vault()
     try:
         with open(vfname, 'xb') as fp:
@@ -98,14 +92,7 @@ def cmd_set(vfname: str, vpass: bytes, salt: bytes, v: vault.Vault) -> None:
         d = {}
         d['credname'] = input(f'{"credential:":<20}')
         d['username'] = input(f'{"username:":<20}')
-
-        while True:
-            d['password'] = util.get_password(f'{"password:":<20}').decode('utf-8')
-            pass_confirm = util.get_password(f'{"password:":<20}').decode('utf-8')
-            if d['password'] == pass_confirm:
-                break
-            print('\npasswords do not match\n')
-
+        d['password'] = util.get_confirmed_password(f'{"password:":<20}').decode('utf-8')
         d['description'] = input(f'{"description:":<20}')
 
     except EOFError:
@@ -153,13 +140,7 @@ def cmd_remove(vfname: str, vpass: bytes, salt: bytes, v: vault.Vault, credname:
 
 def cmd_rekey(v: vault.Vault, vfname: str) -> None:
     """Change secret key and salt on vault."""
-    while True:
-        newpass = util.get_password('new vault key? ')
-        confirm = util.get_password('new vault key? ')
-        if newpass == confirm:
-            break
-        print('\npasswords do not match\n')
-
+    newpass = util.get_confirmed_password('new vault key? ')
     new_salt = util.make_salt()
     with open(vfname, 'wb') as fp:
         util.save_vault(fp, newpass, new_salt, v)

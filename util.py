@@ -15,6 +15,15 @@ def get_password(prompt: str = 'Password: ') -> bytes:
     """Prompt user for crypto password."""
     return getpass.getpass(prompt).encode()
 
+def get_confirmed_password(prompt: str) -> bytes:
+    """Get password with double-entry confirmation."""
+    while True:
+        password = get_password(prompt)
+        confirm = get_password(prompt)
+        if password == confirm:
+            return password
+        print('\npasswords do not match\n')
+
 def make_salt() -> bytes:
     """Generate a strong salt."""
     return os.urandom(18)
