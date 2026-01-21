@@ -22,7 +22,6 @@ def parse_args() -> Tuple[str, Dict[str, str]]:
     """
     parser = argparse.ArgumentParser(prog='pman.py', description='Password manager')
     subparsers = parser.add_subparsers(dest='command')
-
     subparsers.add_parser('init').add_argument('vfname')
     subparsers.add_parser('list')
     subparsers.add_parser('set')
@@ -33,7 +32,6 @@ def parse_args() -> Tuple[str, Dict[str, str]]:
     subparsers.add_parser('merge').add_argument('v2fname')
 
     args = parser.parse_args()
-
     if args.command is None:
         parser.print_help()
         sys.exit(0)
