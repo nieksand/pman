@@ -59,7 +59,7 @@ def cmd_list(v: vault.Vault) -> None:
     """List vault contents."""
     print('\nVault contents')
     print('--------------')
-    for k in v.list():
+    for k in v.list_all():
         cred = v.get(k)
         age = (datetime.now(UTC) - vault.parse_dt(cred['modified'])).days
         print(f"{k:<20} - u={cred['username']:<30} d={cred['description']:<40} ({age} days)")
@@ -79,7 +79,7 @@ def cmd_set(vfname: str, vpass: bytes, salt: bytes, v: vault.Vault) -> None:
         print('\ncancelled')
 
     credname = d['credname']
-    if credname in v.list():
+    if credname in v.list_all():
         print(f'\nreplacing: {v.get(credname)}\n')
 
     v.set(**d)

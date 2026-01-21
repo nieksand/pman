@@ -7,7 +7,7 @@ class TestVault(unittest.TestCase):
     def test_init(self):
         # starts with nothing
         v = vault.Vault()
-        ks = v.list()
+        ks = v.list_all()
         self.assertEqual(len(ks), 0, 'new vault not empty')
 
     def test_list(self):
@@ -16,7 +16,7 @@ class TestVault(unittest.TestCase):
         v.set('b', username='Bob')
         v.set('a', username='Andy')
         v.set('c', username='Cathy')
-        ks = v.list()
+        ks = v.list_all()
         self.assertEqual(ks, ['a', 'b', 'c'], 'list not sorted')
 
     def test_set(self):
@@ -92,7 +92,7 @@ class TestVault(unittest.TestCase):
         v2.loads(s)
 
         # content integrity
-        self.assertEqual(v2.list(), ['k', 'l'])
+        self.assertEqual(v2.list_all(), ['k', 'l'])
         self.assertEqual(v2.get('k')['username'], 'Kyle')
         self.assertEqual(v2.get('l')['username'], 'Linda')
 
@@ -114,7 +114,7 @@ class TestVault(unittest.TestCase):
 
         actions = v1.merge(v2)
         self.assertEqual(actions, [('add', 'b', None, None)])
-        self.assertEqual(v1.list(), ['a', 'b'])
+        self.assertEqual(v1.list_all(), ['a', 'b'])
         self.assertEqual(v1.get('b')['username'], 'Bob')
 
     def test_merge_update(self):

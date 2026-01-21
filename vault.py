@@ -1,8 +1,6 @@
 """
 In-memory representation of credential vault.
 """
-from __future__ import annotations
-
 from datetime import datetime, UTC
 from typing import Any
 import json
@@ -25,7 +23,7 @@ class Vault:
         """Create empty vault."""
         self.entries: dict[str, dict[str, Any]] = {}
 
-    def list(self) -> list[str]:
+    def list_all(self) -> list[str]:
         """List vault contents."""
         return sorted(self.entries.keys())
 
@@ -70,7 +68,7 @@ class Vault:
         """
         actions: list[tuple[str, str, str | None, str | None]] = []
 
-        for key in other.list():
+        for key in other.list_all():
             if not self.contains(key):
                 actions.append(('add', key, None, None))
                 self.set(key, **other.get(key))
