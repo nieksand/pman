@@ -3,7 +3,7 @@
 Niek's password manager.
 """
 from datetime import datetime, UTC
-from typing import Any, Dict, Tuple
+from typing import Any, Dict
 import argparse
 import os
 import os.path
@@ -14,7 +14,7 @@ import sys
 import util
 import vault
 
-def parse_args() -> Tuple[str, Dict[str, str]]:
+def parse_args() -> Dict[str, str]:
     """Parse command line args.
 
     Uses argparse for command and argument validation.
@@ -36,8 +36,7 @@ def parse_args() -> Tuple[str, Dict[str, str]]:
         parser.print_help()
         sys.exit(0)
 
-    args_dict = {k: v for k, v in vars(args).items() if k != 'command'}
-    return (args.command, args_dict)
+    return vars(args)
 
 
 def cmd_init(vfname: str) -> None:
@@ -160,7 +159,8 @@ def signal_handler(_signum: int, _frame: Any) -> None:
 
 def main() -> None:
     """Main entry point."""
-    cmd, args = parse_args()
+    args = parse_args()
+    cmd = args.pop('command')
 
     # no stacktrace on ctrl-c
     signal.signal(signal.SIGINT, signal_handler)
