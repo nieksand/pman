@@ -13,16 +13,6 @@ import sys
 import util
 import vault
 
-def get_confirmed_password(prompt: str) -> bytes:
-    """Get password with double-entry confirmation."""
-    while True:
-        password = util.get_password(prompt)
-        confirm = util.get_password(prompt)
-        if password == confirm:
-            return password
-        print('\npasswords do not match\n')
-
-
 def parse_args() -> Tuple[str, Dict[str, str]]:
     """Parse command line args.
 
@@ -71,7 +61,7 @@ def parse_args() -> Tuple[str, Dict[str, str]]:
 
 def cmd_init(vfname: str) -> None:
     """Create new empty vault."""
-    vpass = get_confirmed_password('vault key? ')
+    vpass = util.get_confirmed_password('vault key? ')
     v = vault.Vault()
     try:
         with open(vfname, 'xb') as fp:
@@ -103,7 +93,7 @@ def cmd_set(vfname: str, vpass: bytes, salt: bytes, v: vault.Vault) -> None:
         d['credname'] = input(f'{"credential:":<20}')
         d['username'] = input(f'{"username:":<20}')
 
-        d['password'] = get_confirmed_password(f'{"password:":<20}').decode('utf-8')
+        d['password'] = util.get_confirmed_password(f'{"password:":<20}').decode('utf-8')
 
         d['description'] = input(f'{"description:":<20}')
 
@@ -152,7 +142,7 @@ def cmd_remove(vfname: str, vpass: bytes, salt: bytes, v: vault.Vault, credname:
 
 def cmd_rekey(v: vault.Vault, vfname: str) -> None:
     """Change secret key and salt on vault."""
-    newpass = get_confirmed_password('new vault key? ')
+    newpass = util.get_confirmed_password('new vault key? ')
     new_salt = util.make_salt()
     with open(vfname, 'wb') as fp:
         util.save_vault(fp, newpass, new_salt, v)
