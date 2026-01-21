@@ -166,7 +166,7 @@ def cmd_rekey(v: vault.Vault, vfname: str) -> None:
     print('vault key changed')
 
 
-def cmd_merge(v1: vault.Vault, v2fname: str) -> None:
+def cmd_merge(vfname: str, vpass: bytes, salt: bytes, v1: vault.Vault, v2fname: str) -> None:
     """Merge two vault files, keeping newest for conflicting keys."""
     # load second vault
     try:
@@ -194,8 +194,8 @@ def cmd_merge(v1: vault.Vault, v2fname: str) -> None:
         else:
             print(f"skip v2: {key} [v1={v1_cred['modified']}, {v2_cred['modified']}]")
 
-    with open('barfbarf', 'wb') as fp:
-        util.save_vault(fp, b'123', b'123', v1)
+    with open(vfname, 'wb') as fp:
+        util.save_vault(fp, vpass, salt, v1)
 
 
 def signal_handler(_signum: int, _frame: Any) -> None:
@@ -247,7 +247,7 @@ def main() -> None:
     elif cmd == 'rekey':
         cmd_rekey(v, vfname)
     elif cmd == 'merge':
-        cmd_merge(v, **args)
+        cmd_merge(vfname, vpass, salt, v, **args)
     else:
         raise RuntimeError('unhandled command')
 
