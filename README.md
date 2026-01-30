@@ -21,7 +21,7 @@ First create an empty vault.  When prompted for a key you should use a very
 strong password.  This is the one you'll have to memorize to protect your vault
 contents.
 
-    ./pman init ~/.pman_vault
+    ./pman.py init ~/.pman_vault
 
 Add the new vault file to your environment.  For example, a bash user might add
 the following to their .profile:
@@ -32,11 +32,11 @@ To add or update a credential, use the 'set' command.  The inputs are not passed
 via the command line to avoid exposing credentials in shell history files or via
 the process list.
 
-    ./pman set
+    ./pman.py set
 
 You can fetch a credential using the 'get' command.
 
-	./pman get mycred
+	./pman.py get mycred
 
 You can also list all available credentials ('list') or search credentials using
 a substring ('search').  To avoid exposing unneeded passwords, these two
@@ -44,26 +44,26 @@ commands will only show the credential name, username, description, and number
 of days since the entry was last updated.  Once you identify the credential you
 want, use 'get' to fetch the details.
 
-	./pman list
+	./pman.py list
 
 You can 'remove' entries.  The entry being deleted will be emitted to stdout in
 case you make a mistake.  (You can use that information with a 'set' to recreate
 the entry).
 
-	./pman remove mycred
+	./pman.py remove mycred
 
 If you ever need to change the secret key for your vault, you can use the
 'rekey' command.  This changes both the encryption password and generates a new
 random salt for the vault file.
 
-	./pman rekey
+	./pman.py rekey
 
 You can 'merge' credentials from a second vault into your primary vault.  This
 is useful for combining vault backups or synchronizing vaults across machines.
 When both vaults contain the same credential name, the entry with the more
 recent modification date is kept.
 
-	./pman merge /path/to/second_vault
+	./pman.py merge /path/to/second_vault
 
 # Dependencies
 * Python 3.11+
