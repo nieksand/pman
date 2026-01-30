@@ -1,3 +1,2 @@
 #!/bin/bash
-SCRIPT_DIR="$(dirname "$0")"
-PYTHONPATH="$SCRIPT_DIR/.." python3 -m unittest discover -v -s "$SCRIPT_DIR" -p "*.py"
+PYTHONPATH=$(dirname $0)/.. python3 -m unittest -v $(dirname $0)/*.py
