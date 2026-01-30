@@ -4,13 +4,13 @@ import unittest
 import vault
 
 class TestVault(unittest.TestCase):
-    def test_init(self):
+    def test_init(self) -> None:
         # starts with nothing
         v = vault.Vault()
         ks = v.list_all()
         self.assertEqual(len(ks), 0, 'new vault not empty')
 
-    def test_list(self):
+    def test_list(self) -> None:
         # list results are sorted
         v = vault.Vault()
         v.set('b', username='Bob')
@@ -19,7 +19,7 @@ class TestVault(unittest.TestCase):
         ks = v.list_all()
         self.assertEqual(ks, ['a', 'b', 'c'], 'list not sorted')
 
-    def test_set(self):
+    def test_set(self) -> None:
         # check auto-created datetime fields
         v = vault.Vault()
         v.set('d', username='David')
@@ -39,7 +39,7 @@ class TestVault(unittest.TestCase):
         self.assertEqual(d['created'], hack, 'created changed')
         self.assertNotEqual(d['modified'], hack, 'created unchanged')
 
-    def test_get(self):
+    def test_get(self) -> None:
         # existing credential exists
         v = vault.Vault()
         v.set('e', username='Edward', extra='potato')
@@ -53,7 +53,7 @@ class TestVault(unittest.TestCase):
         # missing credential throws
         self.assertRaises(KeyError, v.get, 'nonexistent cred')
 
-    def test_search(self):
+    def test_search(self) -> None:
         v = vault.Vault()
         v.set('meowmeow', username='Frederico')
         v.set('meowmix', username='Gregory')
@@ -69,7 +69,7 @@ class TestVault(unittest.TestCase):
         # empty substr matches all
         self.assertEqual(v.search(''), ['meowmeow', 'meowmix', 'meowpurr', 'purrito'])
 
-    def test_remove(self):
+    def test_remove(self) -> None:
         v = vault.Vault()
         v.set('j', username='John')
 
@@ -80,7 +80,7 @@ class TestVault(unittest.TestCase):
         v.remove('j')
         self.assertRaises(KeyError, v.get, 'j')
 
-    def test_dump_load(self):
+    def test_dump_load(self) -> None:
         # dump vault to string
         v1 = vault.Vault()
         v1.set('k', username='Kyle')
@@ -96,7 +96,7 @@ class TestVault(unittest.TestCase):
         self.assertEqual(v2.get('k')['username'], 'Kyle')
         self.assertEqual(v2.get('l')['username'], 'Linda')
 
-    def test_dt_helpers(self):
+    def test_dt_helpers(self) -> None:
         s = vault.current_dt()
         self.assertEqual(len(s), 19)
 
@@ -104,7 +104,7 @@ class TestVault(unittest.TestCase):
         utc = datetime.now(UTC)
         self.assertGreaterEqual(utc, dt)
 
-    def test_merge_add(self):
+    def test_merge_add(self) -> None:
         # new keys from other vault are added
         v1 = vault.Vault()
         v1.set('a', username='Alice')
@@ -117,7 +117,7 @@ class TestVault(unittest.TestCase):
         self.assertEqual(v1.list_all(), ['a', 'b'])
         self.assertEqual(v1.get('b')['username'], 'Bob')
 
-    def test_merge_update(self):
+    def test_merge_update(self) -> None:
         # existing keys updated when other is newer
         v1 = vault.Vault()
         v1.set('a', username='Alice')
@@ -131,7 +131,7 @@ class TestVault(unittest.TestCase):
         self.assertEqual(actions, [('update', 'a', '2020-01-01 00:00:00', '2025-01-01 00:00:00')])
         self.assertEqual(v1.get('a')['username'], 'Alice-Updated')
 
-    def test_merge_skip(self):
+    def test_merge_skip(self) -> None:
         # existing keys skipped when self is newer
         v1 = vault.Vault()
         v1.set('a', username='Alice')
@@ -145,7 +145,7 @@ class TestVault(unittest.TestCase):
         self.assertEqual(actions, [('skip', 'a', '2025-01-01 00:00:00', '2020-01-01 00:00:00')])
         self.assertEqual(v1.get('a')['username'], 'Alice')
 
-    def test_merge_identical(self):
+    def test_merge_identical(self) -> None:
         # identical credentials produce no action
         v1 = vault.Vault()
         v1.set('a', username='Alice')

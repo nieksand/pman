@@ -6,13 +6,13 @@ import vault
 
 class UtilTest(unittest.TestCase):
 
-    def test_make_salt(self):
+    def test_make_salt(self) -> None:
         # quickie check on length and minimal byte variety
         s = util.make_salt()
         self.assertEqual(len(s), 18)
         self.assertGreater(len(set(s)), 4)
 
-    def test_encrypt_decrypt(self):
+    def test_encrypt_decrypt(self) -> None:
         # roundtrip to ensure we can recover original plaintext
         password = b'potato'
         salt = util.make_salt()
@@ -23,7 +23,7 @@ class UtilTest(unittest.TestCase):
 
         self.assertEqual(plain_text, deciphered_text)
 
-    def test_save_load_vault(self):
+    def test_save_load_vault(self) -> None:
         # dummy vault with data
         v = vault.Vault()
         v.set('email', username='Niek Sanders', password='secret')
